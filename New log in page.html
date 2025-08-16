@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Login Page</title>
+  <style>
+    /* General body styling */
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #4ee2c9, #3e2ce7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    /* Container for the login form */
+    .login-container {
+      background-color: #ffffff;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    /* Styling for the heading */
+    .login-container h2 {
+      margin-bottom: 1.5rem;
+      color: #333333;
+    }
+
+    /* Styling for input fields */
+    .input-group {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #555555;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #cccccc;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+
+    /* Styling for buttons */
+    .btn {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 5px;
+      font-size: 1rem;
+      color: #ffffff;
+      background-color: #1d1672;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+
+    .btn:hover {
+      background-color: #6681fc;
+    }
+
+    /* Styling for the forgot password link */
+    .forgot-password {
+      margin-top: 1rem;
+      display: block;
+      color: #ff6f61;
+      text-decoration: none;
+    }
+
+    .forgot-password:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" required>
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required>
+      </div>
+      <button type="submit" class="btn">Login</button>
+    </form>
+    <a href="#" class="forgot-password" id="forgotPasswordLink">Forgot Password?</a>
+  </div>
+
+  <script>
+    // Predefined user credentials
+    const users = {
+      Admin: 'Adm!n@123',
+      C18777: 'Mac@09072002'
+    };
+
+    // Reference to the login form
+    const loginForm = document.getElementById('loginForm');
+
+    // Event listener for form submission
+    loginForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const usernameInput = document.getElementById('username').value;
+      const passwordInput = document.getElementById('password').value;
+
+      // Check if the entered credentials match the predefined users
+      if (users[usernameInput] && users[usernameInput] === passwordInput) {
+        alert('Login successful!');
+        window.location.href="F:\Header Part.html";
+        // Redirect or perform other actions upon successful login
+      } else {
+        alert('Invalid username or password.');
+      }
+    });
+
+    // Reference to the forgot password link
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+
+    // Event listener for forgot password link
+    forgotPasswordLink.addEventListener('click', function(event) {
+      event.preventDefault();
+      const usernameInput = prompt('Enter your username:');
+      if (users[usernameInput]) {
+        const newPassword = prompt('Enter your new password:');
+        if (newPassword) {
+          users[usernameInput] = newPassword;
+          alert('Password updated successfully.');
+        } else {
+          alert('Password update cancelled.');
+        }
+      } else {
+        alert('Username not found.');
+      }
+    });
+  </script>
+
+</body>
+</html>

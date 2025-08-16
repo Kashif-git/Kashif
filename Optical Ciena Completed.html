@@ -1,0 +1,3575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optical Ciena</title>
+  
+    
+</head>
+
+ 
+  <style>
+
+     /* General Body Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #e0f7fa;
+}
+
+/* Header */
+.header {
+    background-color: #274A8A;
+    color: white;
+    padding: 10px;
+}
+
+.header h1 {
+    margin: 0;
+    padding-left: 10px;
+    font-size: 24px;
+}
+
+/* Filter Container */
+.filter-container {
+    background-color: #a3c2f7;
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.group-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.filter-group {
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-group span {
+    font-size: 14px;
+}
+
+/* Status Circles */
+.dot {
+    height: 14px;
+    width: 14px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.critical { background-color: red; }
+.moderate { background-color: yellow; }
+.normal { background-color: green; }
+
+/* Category Squares */
+.category1, .category2 {
+    height: 14px;
+    width: 14px;
+    display: inline-block;
+}
+
+.category1 { border: 2px solid red; }
+.category2 { border: 2px solid green; }
+
+/* Alarm Shapes */
+.bordered-circle {
+    height: 20px;
+    width: 20px;
+    border: 2px solid black;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.bordered-square {
+    height: 20px;
+    width: 20px;
+    border: 2px solid black;
+    display: inline-block;
+}
+
+.bordered-rectangle {
+    height: 20px;
+    width: 40px;
+    border: 2px solid black;
+    display: inline-block;
+}
+
+.bordered-rhombus {
+    width: 20px;
+    height: 20px;
+    border: 2px solid black;
+    transform: rotate(45deg);
+    display: inline-block;
+}
+
+.bordered-pentagon {
+    width: 20px;
+    height: 20px;
+    clip-path: polygon(50% 0%, 100% 35%, 82% 100%, 18% 100%, 0% 35%);
+    border: 2px solid black;
+    display: inline-block;
+}
+
+ .cable {
+    height: 3px;
+    width: 30px;
+    display: inline-block;
+}
+
+.opgw-cable { border-bottom: 2px dotted green; }
+.uc-cable { border-bottom: 2px solid green; }
+
+/* Alarm Box */
+.alarm-box {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+    .container {
+      width: 100%;
+      height: 100vh;
+      padding: 1rem;
+    }
+
+    .diagram-wrapper {
+      padding: 2rem;
+      background-color: rgb(241, 245, 249);
+      border-radius: 0.5rem;
+      overflow: auto;
+    }
+
+    .diagram {
+      position: relative;
+      padding: 2rem;
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      min-width: 1400px;
+      min-height: 1000px;
+    }
+
+    .node {
+      position: absolute;
+      transition: transform 0.3s;
+    }
+
+    .node:hover {
+      transform: scale(1.1);
+      z-index: 10;
+    }
+
+    .node-content {
+      position: relative;
+    }
+
+    .node-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .node-shape {
+      position: relative;
+      margin-bottom: 1rem;
+    }
+
+    .node-box {
+      border: 2px solid;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .node-box.main-node {
+      width: 112px;
+      height: 112px;
+    }
+
+    .node-box.sub-node {
+      width: 56px;
+      height: 56px;
+    }
+
+    .node-id {
+      font-size: 0.75rem;
+      position: absolute;
+      bottom: -1.5rem;
+      width: 100%;
+      text-align: center;
+    }
+
+    .node-alarms {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-rows: repeat(2, 1fr);
+      gap: 0.25rem;
+      padding: 0.25rem;
+    }
+
+    .alarm-row {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .alarm-indicator {
+      width: 8px;
+      height: 8px;
+    }
+
+    .alarm-circle { border-radius: 9999px; }
+    .alarm-diamond { transform: rotate(45deg); }
+    .alarm-pentagon { clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); }
+
+    .status-critical { background-color: rgb(239, 68, 68); }
+    .status-moderate { background-color: rgb(249, 115, 22); }
+    .status-normal { background-color: rgb(34, 197, 94); }
+
+    .border-category-1 { border-color: rgb(239, 68, 68); }
+    .border-category-2 { border-color: rgb(34, 197, 94); }
+
+    .connection-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .connection-line {
+      stroke: rgb(34, 197, 94);
+      stroke-width: 2;
+    }
+
+    .connection-disabled {
+      stroke: rgb(239, 68, 68);
+      stroke-dasharray: 5,5;
+    }
+    .button-module{
+      color: black;
+    padding: 5px 10px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: solid;
+    }
+    .button{
+      color: black;
+      border-radius: 25px;
+      background-color: white;
+      text-decoration: solid;
+    }
+    .but{
+      color: black;
+      height: 30px;
+    width: 100px;
+      border-radius: 20px;
+      background-color: white;
+      font-family: Arial, sans-serif;
+      padding: 5px;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>OPTICAL CIENA</h1>
+</div>
+
+<div class="filter-container">
+    <div class="group-container">
+        <!-- Status -->
+        <div class="filter-group">
+            <div class="dot critical"></div><span>Critical</span>
+            <div class="dot moderate"></div><span>Moderate</span>
+            <div class="dot normal"></div><span>Normal</span>
+        </div>
+
+        <!-- Category with sizes adjusted -->
+        <div class="filter-group">
+            <div class="category1"></div><span>Category 1</span>
+            <div class="category2"></div><span>Category 2</span>
+        </div>
+
+        <!-- Alarms with adjusted alignment and sizing -->
+        <div class="filter-group alarm-box">
+            <div class="bordered-square"></div><span>Fiber</span>
+            <div class="bordered-circle"></div><span>Environmental Alarm</span>
+            <div class="bordered-rhombus"></div><span>Power Supply Alarm</span>
+            <div class="bordered-pentagon"></div><span>Maintenance Alarm</span>
+            <div class="bordered-rectangle"></div><span>Equipment Failure</span>
+        </div>
+    </div>
+
+    <div class="group-container">
+        <div class="filter-group">
+            <div class="cable opgw-cable"></div><span>OPGW Cable</span>
+            <div class="cable uc-cable"></div><span>UC Cable</span>
+        </div>
+
+        <div class="filter-group">
+            <span>Delta</span>
+            <span>Non Delta</span>
+        </div>
+
+        <div class="filter-group">
+            <span>Single DLA-RLS R8</span>
+            <span>Single DLF-RLS R8</span>
+            <span>ROADM</span>
+            <span>Glass Break</span>
+            <span>Add-Drop-RLS R4</span>
+        </div>
+        <div class="button-module">
+          <button class="but"><a class="button" href="C:\Users\C18777\OneDrive - Sify Technologies Limited\Documents\Mohammed Kashif\Kashif Needs\Msc Project\Header Part.html">Back to Home</a></button>
+        </div> 
+    </div>
+</div>                     
+  <div id="app" class="container">
+    <div class="diagram-wrapper">
+      <div class="diagram" id="network-diagram"></div>
+    </div>
+    
+  </div>
+ 
+  <script>
+    const networkData = {
+      nodes: [
+        // Main Nodes - positioned at extreme left, center, and right
+        {
+          id: "MainNode-1",
+          category: 1,
+          type: "ROADM",
+          isMain: true,
+          size: { width: 112, height: 112 },
+          position: { x: 40, y: 400 },
+          alarms: {
+            fiber: { status: "critical" },
+            environmental: { status: "moderate" },
+            powerSupply: { status: "normal" },
+            maintenance: { status: "normal" }
+          },
+          connections: [{ to: "MainNode-2", type: "opgw", disabled: false }]
+        },
+        {
+          id: "MainNode-2",
+          category: 1,
+          type: "ROADM",
+          isMain: true,
+          size: { width: 112, height: 112 },
+          position: { x: 644, y: 400 },
+          alarms: {
+            fiber: { status: "normal" },
+            environmental: { status: "critical" },
+            powerSupply: { status: "moderate" },
+            maintenance: { status: "normal" }
+          },
+          connections: [
+            { to: "MainNode-1", type: "opgw", disabled: false },
+            { to: "MainNode-3", type: "opgw", disabled: false }
+          ]
+        },
+        {
+          id: "MainNode-3",
+          category: 1,
+          type: "ROADM",
+          isMain: true,
+          size: { width: 112, height: 112 },
+          position: { x: 1248, y: 400 },
+          alarms: {
+            fiber: { status: "moderate" },
+            environmental: { status: "normal" },
+            powerSupply: { status: "critical" },
+            maintenance: { status: "moderate" }
+          },
+          connections: [{ to: "MainNode-2", type: "opgw", disabled: false }]
+        }
+      ]
+    };
+
+  
+    for (let i = 0; i < 36; i++) {
+      const row = Math.floor(i / 12);
+      const col = i % 12;
+      const statusOptions = ["normal", "moderate", "critical"];
+      
+      networkData.nodes.push({
+        id: SubNode-${i + 1},
+        category: 2,
+        type: "ADD LM DLA R8",
+        isMain: false,
+        size: { width: 56, height: 56 },
+        position: { x: 40 + (col * 110), y: 40 + (row * 80) }, // Increased horizontal spacing
+        alarms: {
+          fiber: { status: statusOptions[Math.floor(Math.random() * 3)] },
+          environmental: { status: statusOptions[Math.floor(Math.random() * 3)] },
+          powerSupply: { status: statusOptions[Math.floor(Math.random() * 3)] },
+          maintenance: { status: statusOptions[Math.floor(Math.random() * 3)] }
+        },
+        connections: [{ 
+          to: i === 0 ? "MainNode-1" : SubNode-${i}, 
+          type: "opgw", 
+          disabled: Math.random() > 0.8 
+        }]
+      });
+    }
+
+    for (let i = 0; i < 64; i++) {
+      const row = Math.floor(i / 16);
+      const col = i % 16;
+      const statusOptions = ["normal", "moderate", "critical"];
+      
+      networkData.nodes.push({
+        id: SubNode-${i + 37},
+        category: 2,
+        type: "Glass thrue",
+        isMain: false,
+        size: { width: 56, height: 56 },
+        position: { x: 40 + (col * 85), y: 600 + (row * 80) },
+        alarms: {
+          fiber: { status: statusOptions[Math.floor(Math.random() * 3)] },
+          environmental: { status: statusOptions[Math.floor(Math.random() * 3)] },
+          powerSupply: { status: statusOptions[Math.floor(Math.random() * 3)] },
+          maintenance: { status: statusOptions[Math.floor(Math.random() * 3)] }
+        },
+        connections: [{ 
+          to: i === 0 ? "MainNode-3" : SubNode-${i + 36}, 
+          type: "opgw", 
+          disabled: Math.random() > 0.8 
+        }]
+      });
+    }
+
+    function createNode(node) {
+      const nodeElement = document.createElement('div');
+      nodeElement.className = 'node';
+      nodeElement.style.left = ${node.position.x}px;
+      nodeElement.style.top = ${node.position.y}px;
+
+      nodeElement.innerHTML = `
+        <div class="node-content">
+          <div class="node-inner">
+            <div class="node-shape">
+              <div class="node-box ${node.isMain ? 'main-node' : 'sub-node'} border-category-${node.category}">
+                <div class="node-alarms">
+                  <div class="alarm-row">
+                    <div class="alarm-indicator ${getStatusClass(node.alarms.fiber.status)}"></div>
+                    <div class="alarm-indicator alarm-circle ${getStatusClass(node.alarms.environmental.status)}"></div>
+                  </div>
+                  <div class="alarm-row">
+                    <div class="alarm-indicator alarm-diamond ${getStatusClass(node.alarms.powerSupply.status)}"></div>
+                    <div class="alarm-indicator alarm-pentagon ${getStatusClass(node.alarms.maintenance.status)}"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="node-id">${node.id}</div>
+          </div>
+        </div>
+      `;
+
+      return nodeElement;
+    }
+
+    function createConnections(nodes) {
+      let paths = '';
+      
+      nodes.forEach(node => {
+        (node.connections || []).forEach(connection => {
+          const toNode = nodes.find(n => n.id === connection.to);
+          if (!toNode) return;
+
+          const fromPos = {
+            x: node.position.x + (node.isMain ? 56 : 28),
+            y: node.position.y + (node.isMain ? 56 : 28)
+          };
+          
+          const toPos = {
+            x: toNode.position.x + (toNode.isMain ? 56 : 28),
+            y: toNode.position.y + (toNode.isMain ? 56 : 28)
+          };
+
+          paths += `
+            <line
+              x1="${fromPos.x}"
+              y1="${fromPos.y}"
+              x2="${toPos.x}"
+              y2="${toPos.y}"
+              class="connection-line ${connection.disabled ? 'connection-disabled' : ''}"
+            />
+          `;
+        });
+      });
+
+      return <svg class="connection-svg">${paths}</svg>;
+    }
+
+    function getStatusClass(status) {
+      switch (status) {
+        case 'critical': return 'status-critical';
+        case 'moderate': return 'status-moderate';
+        case 'normal': return 'status-normal';
+        default: return '';
+      }
+    }
+
+    function renderDiagram() {
+      const diagram = document.getElementById('network-diagram');
+      diagram.innerHTML = createConnections(networkData.nodes);
+      
+      networkData.nodes.forEach(node => {
+        diagram.appendChild(createNode(node));
+      });
+    }
+
+  
+    renderDiagram();
+  </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .container {
+      width: 100%;
+      height: 100vh;
+      padding:1rem ;
+    }
+
+    .diagram-wrapper {
+      padding: 2rem;
+      background-color: rgb(241, 245, 249);
+      border-radius: 0.5rem;
+      overflow: auto;
+    }
+
+    .diagram {
+      position: relative;
+      padding: 2rem;
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    }
+
+    .node {
+      position: absolute;
+      margin-bottom: 10px;
+    }
+
+    .node-content {
+      position: relative;
+    }
+
+    .node-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      
+    }
+
+    .node-shape {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .node-box {
+      width: 60px;
+      height: 60px;
+      border: 2px solid;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .node-id {
+      font-size: 0.75rem;
+      position: absolute;
+      bottom: -1.5rem;
+      width: 100%;
+      text-align: center;
+    }
+
+    .node-alarms {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-rows: repeat(2, 1fr);
+      gap: 0.25rem;
+      padding: 0.25rem;
+    }
+
+    .alarm-row {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .alarm-indicator {
+      width: 8px;
+      height: 8px;
+    }
+
+    .alarm-circle {
+      border-radius: 9999px;
+    }
+
+    .alarm-diamond {
+      transform: rotate(45deg);
+    }
+
+    .alarm-pentagon {
+      clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+    }
+
+    .status-critical { background-color: rgb(239, 68, 68); }
+    .status-moderate { background-color: rgb(249, 115, 22); }
+    .status-normal { background-color: rgb(34, 197, 94); }
+    .status-gray { background-color: rgb(107, 114, 128); }
+
+    .border-category-1 { border-color: rgb(239, 68, 68); }
+    .border-category-2 { border-color: rgb(34, 197, 94); }
+
+    .side-extension {
+      position: absolute;
+      width: 28px;
+      height: 56px;
+      background-color: rgb(186, 230, 253);
+    }
+
+    .side-extension-left {
+      left: -29px;
+      top: 0;
+      clip-path: polygon(100% 0%, 0% 50%, 100% 100%);
+    }
+
+    .side-extension-right {
+      right: -29px;
+      top: 0;
+      clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+    }
+
+    .extension-bar {
+      position: absolute;
+      background-color: rgb(186, 230, 253);
+      border-radius: 0.375rem;
+    }
+
+    .extension-bar-vertical {
+      width: 12px;
+      height: 56px;
+    }
+
+    .extension-bar-horizontal {
+      width: 56px;
+      height: 12px;
+    }
+
+    .connection-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .connection-cross {
+      fill: none;
+      stroke: red;
+      stroke-width: 2;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="container"></div>
+
+  <script>
+    const CELL_SIZE = 200;
+    const NODE_SIZE = 56;
+    const PADDING = 40;
+
+    const sampleNodes =[
+  {
+    "id": "Node-1",
+    "category": 1,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-71",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-26",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-70",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-2",
+    "category": 1,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-43",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-3",
+    "category": 1,
+    "type": "single DLE RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-26",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-6",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-4",
+    "category": 2,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-39",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-5",
+    "category": 1,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-37",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-35",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-6",
+    "category": 2,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-43",
+        "type": "ug",
+        "disabled": false
+      },
+      {
+        "to": "Node-84",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-7",
+    "category": 2,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-83",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-8",
+    "category": 2,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-45",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-9",
+    "category": 1,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-49",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-89",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-10",
+    "category": 2,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-14",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-88",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-18",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-11",
+    "category": 2,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-57",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-12",
+    "category": 1,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-32",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-13",
+    "category": 1,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-86",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-27",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-3",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-14",
+    "category": 2,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-58",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-13",
+        "type": "ug",
+        "disabled": false
+      },
+      {
+        "to": "Node-77",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-15",
+    "category": 1,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-6",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-16",
+    "category": 2,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-58",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-82",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-17",
+    "category": 1,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-31",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-3",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-18",
+    "category": 1,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-61",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-75",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-19",
+    "category": 2,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-84",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-20",
+    "category": 2,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-31",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-14",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-25",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-21",
+    "category": 2,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-52",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-42",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-22",
+    "category": 1,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-42",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-37",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-66",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-23",
+    "category": 2,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-64",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-75",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-90",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-24",
+    "category": 2,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-71",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-89",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-25",
+    "category": 1,
+    "type": "single DLE RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-89",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-26",
+    "category": 1,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-55",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-27",
+    "category": 1,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-56",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-28",
+    "category": 1,
+    "type": "single DLE RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-76",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-29",
+    "category": 2,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-80",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-41",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-19",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-30",
+    "category": 1,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-19",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-31",
+    "category": 1,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-25",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-33",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-46",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-32",
+    "category": 2,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-39",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-59",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-68",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-33",
+    "category": 2,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-9",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-18",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-34",
+    "category": 1,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-70",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-35",
+    "category": 1,
+    "type": "single DLE RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-21",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-36",
+    "category": 1,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-9",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-37",
+    "category": 2,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-6",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-38",
+    "category": 2,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-74",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-57",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-16",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-39",
+    "category": 1,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-36",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-40",
+    "category": 1,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-35",
+        "type": "ug",
+        "disabled": false
+      },
+      {
+        "to": "Node-36",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-51",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-41",
+    "category": 1,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-58",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-16",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-7",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-42",
+    "category": 2,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-26",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-48",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-43",
+    "category": 1,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-65",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-53",
+        "type": "ug",
+        "disabled": false
+      },
+      {
+        "to": "Node-83",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-44",
+    "category": 2,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-19",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-29",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-45",
+    "category": 2,
+    "type": "single DLE RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-88",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-46",
+    "category": 1,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-83",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-47",
+    "category": 2,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-46",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-48",
+    "category": 2,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-63",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-84",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-49",
+    "category": 2,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-4",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-38",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-50",
+    "category": 2,
+    "type": "single DLE RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-5",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-51",
+    "category": 2,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-20",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-12",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-27",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-52",
+    "category": 2,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-82",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-42",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-53",
+    "category": 1,
+    "type": "single DLE RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-31",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-54",
+    "category": 1,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-27",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-55",
+    "category": 1,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-81",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-56",
+    "category": 2,
+    "type": "single DLE RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-65",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-57",
+    "category": 2,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-87",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-68",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-58",
+    "category": 1,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-76",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-60",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-41",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-59",
+    "category": 2,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-14",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-60",
+    "category": 2,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-88",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-61",
+    "category": 1,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-71",
+        "type": "ug",
+        "disabled": false
+      },
+      {
+        "to": "Node-28",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-62",
+    "category": 2,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-75",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-50",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-77",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-63",
+    "category": 2,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-56",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-64",
+    "category": 1,
+    "type": "single DLE RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-87",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-53",
+        "type": "ug",
+        "disabled": false
+      },
+      {
+        "to": "Node-10",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-65",
+    "category": 1,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-71",
+        "type": "ug",
+        "disabled": false
+      },
+      {
+        "to": "Node-63",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-66",
+    "category": 2,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-78",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-67",
+    "category": 1,
+    "type": "single DLE RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-45",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-22",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-38",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-68",
+    "category": 2,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-86",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-69",
+    "category": 2,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-75",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-70",
+    "category": 2,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-43",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-71",
+    "category": 1,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-83",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-72",
+    "category": 1,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-8",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-3",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-42",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-73",
+    "category": 1,
+    "type": "single DLE RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-41",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-74",
+    "category": 2,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-50",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-86",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-64",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-75",
+    "category": 1,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-77",
+        "type": "ug",
+        "disabled": false
+      },
+      {
+        "to": "Node-52",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-8",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-76",
+    "category": 2,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-11",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-77",
+    "category": 1,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-66",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-78",
+    "category": 2,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-67",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-79",
+    "category": 1,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-43",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-80",
+    "category": 2,
+    "type": "ROADM",
+    "alarms": {
+      "fiber": {
+        "status": "critical"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-46",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-81",
+    "category": 2,
+    "type": "single DLE RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-59",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-80",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-82",
+    "category": 2,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-37",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-83",
+    "category": 1,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-44",
+        "type": "ug",
+        "disabled": false
+      },
+      {
+        "to": "Node-7",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-84",
+    "category": 2,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-49",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-24",
+        "type": "ug",
+        "disabled": true
+      },
+      {
+        "to": "Node-60",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-85",
+    "category": 1,
+    "type": "Glass thrue",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "normal"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-47",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-67",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-86",
+    "category": 1,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-5",
+        "type": "opgw",
+        "disabled": false
+      },
+      {
+        "to": "Node-20",
+        "type": "opgw",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-87",
+    "category": 2,
+    "type": "single DLA RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "normal"
+      },
+      "powerSupply": {
+        "status": "critical"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-12",
+        "type": "opgw",
+        "disabled": true
+      },
+      {
+        "to": "Node-1",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-88",
+    "category": 2,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "normal"
+      },
+      "environmental": {
+        "status": "moderate"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "moderate"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-5",
+        "type": "opgw",
+        "disabled": true
+      }
+    ]
+  },
+  {
+    "id": "Node-89",
+    "category": 2,
+    "type": "ADD LM DLA R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "normal"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-84",
+        "type": "ug",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "id": "Node-90",
+    "category": 1,
+    "type": "single DLE RLS R8",
+    "alarms": {
+      "fiber": {
+        "status": "moderate"
+      },
+      "environmental": {
+        "status": "critical"
+      },
+      "powerSupply": {
+        "status": "moderate"
+      },
+      "maintenance": {
+        "status": "critical"
+      }
+    },
+    "connections": [
+      {
+        "to": "Node-53",
+        "type": "ug",
+        "disabled": true
+      }
+    ]
+  }
+]
+
+    function calculateGridDimensions(nodeCount) {
+      const aspectRatio = 16/9;
+      const rows = Math.ceil(Math.sqrt(nodeCount / aspectRatio));
+      const cols = Math.ceil(nodeCount / rows);
+      return { rows, cols };
+    }
+
+    function calculateNodePositions(nodes) {
+      const { rows, cols } = calculateGridDimensions(nodes.length);
+      
+      return nodes.map((node, index) => {
+        const row = Math.floor(index / cols);
+        const col = index % cols;
+        
+        return {
+          ...node,
+          position: {
+            x: (col * CELL_SIZE) + PADDING,
+            y: (row * CELL_SIZE) + PADDING
+          }
+        };
+      });
+    }
+
+    function getStatusClass(status) {
+      switch (status) {
+        case 'critical': return 'status-critical';
+        case 'moderate': return 'status-moderate';
+        case 'normal': return 'status-normal';
+        default: return 'status-gray';
+      }
+    }
+
+    function createNodeAlarms(alarms) {
+      return `
+        <div class="node-alarms">
+          <div class="alarm-row">
+            <div class="alarm-indicator ${getStatusClass(alarms.fiber.status)}"></div>
+            <div class="alarm-indicator alarm-circle ${getStatusClass(alarms.environmental.status)}"></div>
+          </div>
+          <div class="alarm-row">
+            <div class="alarm-indicator alarm-diamond ${getStatusClass(alarms.powerSupply.status)}"></div>
+            <div class="alarm-indicator alarm-pentagon ${getStatusClass(alarms.maintenance.status)}"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function createNodeShape(type) {
+      switch (type) {
+        case 'single DLA RLS R8':
+          return `
+            <div class="side-extension side-extension-left"></div>
+            <div class="side-extension side-extension-right"></div>
+          `;
+        
+        case 'single DLE RLS R8':
+          return `
+            <div class="extension-bar extension-bar-horizontal" style="top: -13px"></div>
+            <div class="side-extension side-extension-left"></div>
+            <div class="side-extension side-extension-right"></div>
+          `;
+        
+        case 'ROADM':
+          return `
+            <div class="extension-bar extension-bar-vertical" style="left: -13px"></div>
+            <div class="extension-bar extension-bar-vertical" style="right: -13px"></div>
+          `;
+        
+        case 'Glass thrue':
+          return `
+            <div class="extension-bar extension-bar-horizontal" style="top: -13px"></div>
+            <div class="extension-bar extension-bar-horizontal" style="bottom: -13px"></div>
+          `;
+        
+        default:
+          return '';
+      }
+    }
+
+    function createConnections(nodes) {
+      let paths = '';
+      
+      nodes.forEach(node => {
+        (node.connections || []).forEach((connection, index) => {
+          const toNode = nodes.find(n => n.id === connection.to);
+          if (!toNode) return;
+
+          const fromPos = {
+            x: node.position.x + NODE_SIZE/2,
+            y: node.position.y + NODE_SIZE/2
+          };
+          
+          const toPos = {
+            x: toNode.position.x + NODE_SIZE/2,
+            y: toNode.position.y + NODE_SIZE/2
+          };
+
+          const midX = (fromPos.x + toPos.x) / 2;
+          const midY = (fromPos.y + toPos.y) / 2;
+
+          paths += `
+            <line
+              x1="${fromPos.x}"
+              y1="${fromPos.y}"
+              x2="${toPos.x}"
+              y2="${toPos.y}"
+              stroke="green"
+              stroke-width="2"
+              ${connection.type === 'opgw' ? 'stroke-dasharray="5,5"' : ''}
+            />
+          `;
+
+          if (connection.disabled) {
+            paths += `
+              <g transform="translate(${midX-6} ${midY-6})">
+                <rect width="12" height="12" fill="white" />
+                <line x1="0" y1="0" x2="12" y2="12" class="connection-cross" />
+                <line x1="12" y1="0" x2="0" y2="12" class="connection-cross" />
+              </g>
+            `;
+          }
+        });
+      });
+
+      return `
+        <svg class="connection-svg">
+          ${paths}
+        </svg>
+      `;
+    }
+
+    function createNode(node) {
+      return `
+        <div class="node" style="left: ${node.position.x}px; top: ${node.position.y}px">
+          <div class="node-content">
+            <div class="node-inner">
+              <div class="node-shape">
+                <div class="node-box border-category-${node.category}">
+                  ${createNodeShape(node.type)}
+                  ${createNodeAlarms(node.alarms)}
+                </div>
+              </div>
+              <div class="node-id">${node.id}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDiagram() {
+      const nodesWithPositions = calculateNodePositions(sampleNodes);
+      const { rows, cols } = calculateGridDimensions(sampleNodes.length);
+      
+      const containerStyle = `
+        min-height: ${(rows * CELL_SIZE) + (PADDING * 2)}px;
+        min-width: ${(cols * CELL_SIZE) + (PADDING * 2)}px;
+      `;
+
+      const app = document.getElementById('app');
+      app.innerHTML = `
+        <div class="diagram-wrapper">
+          <div class="diagram" style="${containerStyle}">
+            ${createConnections(nodesWithPositions)}
+            ${nodesWithPositions.map(node => createNode(node)).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    renderDiagram();
+  </script>
+</body>
+</html>
