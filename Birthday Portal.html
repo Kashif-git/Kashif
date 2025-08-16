@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🎉 Surprise Birthday Portal 🎉</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      background: linear-gradient(to right, #8360c3, #2ebf91);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .stars, .balloons {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .star, .balloon {
+      position: absolute;
+      animation: float 10s linear infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(100vh); opacity: 1; }
+      100% { transform: translateY(-20vh); opacity: 0; }
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .login-box, .surprise-box {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+      min-width: 300px;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1, h2 {
+      color: #7085f0;
+      margin-bottom: 15px;
+    }
+
+    input, button, select {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #2bb874;
+      color: white;
+      border: none;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #e18f13;
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
+    }
+
+    #countdown {
+      font-size: 22px;
+      color: #333;
+      margin: 20px 0;
+    }
+
+    .wish-section {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .logout {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #555;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .wish-message {
+      margin-top: 15px;
+      font-size: 16px;
+      color: #222;
+      padding: 10px;
+      background: #f2f2f2;
+      border-radius: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Animated Stars & Balloons -->
+  <div class="stars"></div>
+  <div class="balloons"></div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <!-- Login -->
+    <div class="login-box" id="loginBox">
+      <h1>🎂 Birthday Surprise Login</h1>
+      <input type="text" id="userId" placeholder="User ID" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button onclick="login()">Login</button>
+      <div class="error" id="loginError"></div>
+    </div>
+
+    <!-- Surprise -->
+    <div class="surprise-box" id="surpriseBox" style="display:none;">
+      <h2>🎉 Countdown to Your Surprise!</h2>
+      <div id="countdown"></div>
+
+      <div class="wish-section" id="wishSection">
+        <select id="wishDropdown" onchange="showWish()">
+          <option selected disabled>🎁 Select Your Birthday Wish</option>
+          <option value="1">Wish 1</option>
+          <option value="2">Wish 2</option>
+          <option value="3">Wish 3</option>
+        </select>
+        <div class="wish-message" id="wishMessage"></div>
+      </div>
+
+      <div class="logout" onclick="logout()">🔒 Logout</div>
+    </div>
+  </div>
+
+  <script>
+    const starCount = 30;
+    const balloonCount = 10;
+
+    function createStars() {
+      const stars = document.querySelector('.stars');
+      for (let i = 0; i < starCount; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.width = '5px';
+        star.style.height = '5px';
+        star.style.background = 'white';
+        star.style.borderRadius = '50%';
+        star.style.animationDuration = `${5 + Math.random() * 5}s`;
+        stars.appendChild(star);
+      }
+    }
+
+    function createBalloons() {
+      const balloons = document.querySelector('.balloons');
+      for (let i = 0; i < balloonCount; i++) {
+        const balloon = document.createElement('div');
+        balloon.classList.add('balloon');
+        balloon.style.left = Math.random() * 100 + '%';
+        balloon.style.width = '20px';
+        balloon.style.height = '30px';
+        balloon.style.background = ['#ff66cc', '#66ccff', '#ffcc66'][i % 3];
+        balloon.style.borderRadius = '50%';
+        balloon.style.animationDuration = `${6 + Math.random() * 4}s`;
+        balloons.appendChild(balloon);
+      }
+    }
+
+    createStars();
+    createBalloons();
+
+    function login() {
+      const user = document.getElementById("userId").value;
+      const pass = document.getElementById("password").value;
+      const error = document.getElementById("loginError");
+
+      if (user === "2000" && pass === "25") {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("surpriseBox").style.display = "block";
+        startCountdown();
+      } else {
+        error.textContent = "Invalid credentials. Try again.";
+      }
+    }
+
+    function logout() {
+      document.getElementById("surpriseBox").style.display = "none";
+      document.getElementById("loginBox").style.display = "block";
+      document.getElementById("loginError").textContent = "";
+      document.getElementById("wishMessage").style.display = "none";
+    }
+
+    function startCountdown() {
+      const countdown = document.getElementById("countdown");
+      const wishSection = document.getElementById("wishSection");
+      const eventDate = new Date("2025-06-29T00:00:00").getTime();
+
+      const timer = setInterval(() => {
+        const now = new Date().getTime();
+        const diff = eventDate - now;
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        if (diff > 0) {
+          countdown.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+        } else {
+          clearInterval(timer);
+          countdown.innerHTML = "🎊 It's Time!";
+          wishSection.style.display = "block";
+        }
+      }, 1000);
+    }
+
+    function showWish() {
+      const wishMessage = document.getElementById("wishMessage");
+      const choice = document.getElementById("wishDropdown").value;
+
+      let message = "";
+      if (choice === "1") {
+        message = "🎂 Barakallahu Fee Umrik! May your birthday be filled with blessings and your life filled with a light of IMAN. Aameen.";
+      } else if (choice === "2") {
+        message = "🎊 Wishing you a year full of barakah and beautiful moments. Happy Birthday Zuha Didi!";
+      } else if (choice === "3") {
+        message = "✨ May your new age be guided by Noor and filled with dua that turns into reality!";
+      }
+
+      wishMessage.style.display = "block";
+      wishMessage.textContent = message;
+    }
+  </script>
+</body>
+</html>
